@@ -33,6 +33,7 @@ package com.mbientlab.metawear.starter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
@@ -44,6 +45,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -88,6 +90,9 @@ public class DeviceSetupActivityFragment extends Fragment implements ServiceConn
     private Button mStartButton;
     private Button mStopButton;
     private Button mSaveDataButton;
+    private NotificationCompat.Builder mBuilder;
+    private final int mNotificationId = 001; // Necessary to cancel notifications
+    private NotificationManager mNotificationManager;
 
     public DeviceSetupActivityFragment() {
     }
@@ -140,7 +145,7 @@ public class DeviceSetupActivityFragment extends Fragment implements ServiceConn
                                 result.subscribe("acc_stream", new RouteManager.MessageHandler() {
                                     @Override
                                     public void process(Message msg) {
-                                        Log.i(TAG, msg.getData(CartesianFloat.class).toString());
+                                        //Log.i(TAG, msg.getData(CartesianFloat.class).toString());
                                         mAccelRecords.add(new SensorRecord(msg.getTimestampAsString(),
                                                 msg.getData(CartesianFloat.class)));
                                     }
@@ -157,11 +162,12 @@ public class DeviceSetupActivityFragment extends Fragment implements ServiceConn
                                 result.subscribe("gyro_stream", new RouteManager.MessageHandler() {
                                     @Override
                                     public void process(Message msg) {
-                                        Log.i(TAG, msg.getData(CartesianFloat.class).toString());
+                                        //Log.i(TAG, msg.getData(CartesianFloat.class).toString());
                                         mGyroRecords.add(new SensorRecord(msg.getTimestampAsString(),
                                                 msg.getData(CartesianFloat.class)));
                                     }
                                 });
+                                createNotification();
                                 gyroModule.setOutputDataRate(25.0f);
                                 gyroModule.start();
                             }
@@ -177,6 +183,7 @@ public class DeviceSetupActivityFragment extends Fragment implements ServiceConn
         view.findViewById(R.id.acc_stop).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mNotificationManager.cancel(mNotificationId);
                 accModule.stop();
                 accModule.disableAxisSampling();
                 gyroModule.stop();
@@ -228,6 +235,21 @@ public class DeviceSetupActivityFragment extends Fragment implements ServiceConn
                     Toast.LENGTH_SHORT).show();
         }
     }
+    /**
+     * Build notification to indicate that app is recording data.
+     */
+    public void createNotification() {
+        mBuilder = new NotificationCompat.Builder(getContext())
+                .setSmallIcon(android.R.drawable.ic_menu_edit)
+                .setTicker(getResources().getString(R.string.notification_alert))
+                .setContentTitle(getResources().getString(R.string.perl_lab))
+                .setContentText(getResources().getString(R.string.notification_text))
+                .setOngoing(true);
+        mNotificationManager =
+                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(mNotificationId, mBuilder.build());
+    }
+
 
     /**
      * Create necessary directories and write files.
@@ -238,7 +260,7 @@ public class DeviceSetupActivityFragment extends Fragment implements ServiceConn
     public void writeFiles() {
         // Create directory and file
         File directory = new File(Environment.getExternalStorageDirectory()
-                + File.separator + "WISDM");
+                + File.separator + "PERL LAB");
         if (!directory.isDirectory()) {
             directory.mkdirs();
         }

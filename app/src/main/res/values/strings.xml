@@ -41,4 +41,7 @@
     <string name="save_data">Save Data</string>
     <string name="label_prompt">Enter label for file:</string>
     <string name="confirm">OK</string>
+    <string name="perl_lab">PERL Lab</string>
+    <string name="notification_alert">Sensor recording started</string>
+    <string name="notification_text">Recording sensor data</string>
 </resources>

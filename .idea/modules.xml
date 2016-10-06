@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Metawear-AndroidStarter-master.iml" filepath="$PROJECT_DIR$/Metawear-AndroidStarter-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Metawear-PhoneLogger.iml" filepath="$PROJECT_DIR$/Metawear-PhoneLogger.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
